@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>F1 2026 | Rank Drivers</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <meta name="referrer" content="no-referrer"> 
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <style>
+        /* --- OFFICIAL F1 FONTS & COLORS --- */
+        @import url('https://fonts.googleapis.com/css2?family=Titillium+Web:ital,wght@0,400;0,600;0,700;0,900;1,400&display=swap');
+        :root { --f1-red: #e10600; --f1-dark: #101010; --f1-carbon: #15151e; --f1-white: #ffffff; }
+        body { font-family: 'Titillium Web', sans-serif; }
+
+        /* --- LAYOUT ADJUSTMENTS --- */
+        /* Main Header - Cleaner now */
+        .f1-header {
+            background-color: var(--f1-red); height: 80px; padding: 0 30px;
+            display: flex; justify-content: space-between; align-items: center;
+            clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+            position: sticky; top: 0; z-index: 100; box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+        .header-title { font-size: 2.2rem; font-weight: 700; font-style: normal; text-transform: uppercase; color: white; margin: -0.5px; letter-spacing: 0.5px; font-family: 'F1 Regular'; }
+
+        /* NEW: Action Toolbar (Between Header and List) */
+        .action-toolbar {
+            max-width: 800px; margin: 30px auto 20px; padding: 0 20px;
+            display: flex; gap: 15px; align-items: center;
+        }
+        
+        /* Button Styles */
+        .toolbar-btn {
+            padding: 10px 20px; font-family: 'Titillium Web', sans-serif; font-weight: 700;
+            text-transform: uppercase; border-radius: 4px; cursor: pointer; transition: 0.2s;
+            font-size: 0.9rem; border: none; display: flex; align-items: center; gap: 8px;
+        }
+        .btn-red { background-color: var(--f1-red); color: white; box-shadow: 0 4px 10px rgba(225,6,0,0.3); }
+        .btn-red:hover { background-color: #c00500; transform: translateY(-2px); }
+        .btn-white { background-color: white; color: var(--f1-dark); box-shadow: 0 4px 10px rgba(255,255,255,0.1); }
+        .btn-white:hover { background-color: #f0f0f0; transform: translateY(-2px); color: var(--f1-red); }
+        .btn-outline { background: transparent; border: 2px solid #444; color: #888; }
+        .btn-outline:hover { border-color: white; color: white; }
+
+        .ranking-container { margin-top: 0; } /* Reset margin since toolbar is there */
+    </style>
+</head>
+<body>
+    <header class="f1-header">
+        <a href="/" class="nav-btn" style="color:white; text-decoration:none; font-weight:700;">← HOME</a>
+        <h1 class="header-title">Drivers Championship</h1>
+        <div style="width: 80px;"></div> 
+    </header>
+        
+
+    <div class="action-toolbar">
+        <button id="top3Btn" class="toolbar-btn btn-red">
+            <span>🏆</span> Share Top 3
+        </button>
+        <button id="shareBtn" class="toolbar-btn btn-white">
+            <span>📋</span> Share Full List
+        </button>
+        <button onclick="location.reload()" class="toolbar-btn btn-outline" style="margin-left: auto;">
+            Reset ↻
+        </button>
+    </script>
+    </div>
+
+    <main class="ranking-container">
+        <div id="sortable-list">
+            {% for d in items %}
+            <div class="rank-item" 
+                 style="--team-color: {{ d.color }};"
+                 data-name="{{ d.name }}"
+                 data-team="{{ d.team }}"
+                 data-color="{{ d.color }}"
+                 data-number="{{ d.number }}"
+                 data-avatar="{{ d.avatar_url }}">
+                <div class="rank-stripe"></div>
+                <div class="current-rank-pos">{{ loop.index }}</div>
+                <img src="{{ d.avatar_url }}" class="rank-avatar" crossorigin="anonymous">
+                <div class="rank-info">
+                    <div class="rank-name">{{ d.name }}</div>
+                    <div class="rank-team" style="color: {{ d.color }}">{{ d.team }}</div>
+                </div>
+                <div class="driver-number">#{{ d.number }}</div>
+                <div class="rank-grip">:::</div>
+            </div>
+            {% endfor %}
+        </div>
+
+    </main>
+
+    <footer>
+        <p style="text-align: center; font-weight: bold; color: #666; margin-top: 40px;">By Saeid</p>
+    </footer>
+
+    <script>
+        const listElement = document.getElementById('sortable-list');
+        const top3Btn = document.getElementById('top3Btn');
+        const shareBtn = document.getElementById('shareBtn');
+
+        // 1. SORTABLE LOGIC
+        Sortable.create(listElement, {
+            animation: 300,
+            ghostClass: 'sortable-ghost',
+            onEnd: function (evt) {
+                let items = document.querySelectorAll('.current-rank-pos');
+                items.forEach((item, index) => { item.innerText = index + 1; });
+            }
+        });
+
+        // ============================================================
+        // REDESIGNED: SHARE FULL LIST (Modern F1 Style)
+        // ============================================================
+        shareBtn.addEventListener('click', function() {
+            const btn = this; const originalText = btn.innerHTML; btn.innerHTML = "Generating...";
+            
+            const poster = document.createElement('div');
+            Object.assign(poster.style, {
+                position: 'absolute', top: '-9999px', left: '0', width: '850px',
+                backgroundColor: '#0e0e12', // Cleaner dark background
+                fontFamily: '"Titillium Web", sans-serif', color: 'white'
+            });
+
+            // Modern F1 Header for the Poster
+            poster.innerHTML = `
+                <div style="background: #e10600; height: 80px; display: flex; align-items: center; padding: 0 40px; clip-path: polygon(0 0, 100% 0, 100% 100%, 0 80%); margin-bottom: 40px;">
+                    <h1 style="margin:0; font-size: 3rem; font-style: italic; font-weight: 900; text-transform: uppercase; color: white; line-height: 1;">My 2026 Grid</h1>
+                </div>
+                <div style="padding: 0 40px;">
+                    <div style="border-left: 5px solid #e10600; padding-left: 20px; margin-bottom: 30px;">
+                        <h2 style="margin:0; text-transform: uppercase; font-weight: 700; letter-spacing: 2px; color: #888; font-size: 1.2rem;">Official Prediction</h2>
+                    </div>
+                    <div id="poster-content"></div>
+                </div>
+                <div style="background: #15151e; margin-top: 40px; padding: 20px; text-align: center;">
+                    <span style="color: #666; text-transform: uppercase; font-weight: 700; letter-spacing: 2px; font-size: 0.9rem;">Created by F1 Rank</span>
+                </div>
+            `;
+            
+            poster.querySelector('#poster-content').appendChild(listElement.cloneNode(true));
+            document.body.appendChild(poster);
+
+            html2canvas(poster, { useCORS: true, scale: 2, backgroundColor: "#0e0e12" }).then(canvas => {
+                const link = document.createElement('a'); link.download = 'My_F1_Ranking.png'; link.href = canvas.toDataURL("image/png"); link.click();
+                document.body.removeChild(poster); btn.innerHTML = originalText;
+            }).catch(err => { console.error(err); btn.innerHTML = "Error"; document.body.removeChild(poster); });
+        });
+
+        // ============================================================
+        // REDESIGNED: SHARE TOP 3 (Modern Podium Style)
+        // ============================================================
+        top3Btn.addEventListener('click', function() {
+            const btn = this; const originalText = btn.innerHTML; btn.innerHTML = "Saving...";
+            const top3Items = Array.from(listElement.querySelectorAll('.rank-item')).slice(0, 3);
+
+            const poster = document.createElement('div');
+            Object.assign(poster.style, {
+                position: 'absolute', top: '-9999px', left: '0', width: '1000px', // Wide
+                backgroundColor: '#0e0e12', // Deep dark background
+                padding: '50px', display: 'flex', flexDirection: 'column', alignItems: 'center',
+                fontFamily: '"Titillium Web", sans-serif', color: 'white',
+                // subtle modern tech background pattern
+                backgroundImage: 'radial-gradient(circle at 50% 0%, #2a2a35 0%, #0e0e12 60%)'
+            });
+
+            let driversHTML = '<div style="display: flex; gap: 30px; justify-content: center; align-items: flex-end; margin-top: 50px; width: 100%;">';
+            
+            top3Items.forEach((item, index) => {
+                const rank = index + 1;
+                const data = { name: item.getAttribute('data-name'), team: item.getAttribute('data-team'), color: item.getAttribute('data-color'), number: item.getAttribute('data-number'), avatar: item.getAttribute('data-avatar') };
+                
+                // Podium Logic: Rank 1 is taller and center. Ranks 2 & 3 are shorter.
+                const isNo1 = rank === 1;
+                // Order them 2, 1, 3 for podium visual flow (requires reordering array or CSS flex order, CSS order is easier here)
+                let order; if(rank===1) order=2; else if(rank===2) order=1; else order=3;
+
+                const height = isNo1 ? '420px' : '350px';
+                const bgColor = isNo1 ? '#1a1a20' : '#15151a';
+                const rankBg = isNo1 ? '#e10600' : '#333';
+
+                driversHTML += `
+                    <div style="order: ${order}; flex: 1; height: ${height}; background: ${bgColor}; border-radius: 20px; position: relative; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.4); display: flex; flex-direction: column; border-bottom: 8px solid ${data.color};">
+                        <div style="position: absolute; top: 20px; left: 20px; background: ${rankBg};color: white; width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 1.8rem; font-style: italic;">${rank}</div>
+                        
+                        <div style="flex-grow: 1; display: flex; justify-content: center; align-items: center; padding-top: 40px;">
+                             <img src="${data.avatar}" crossorigin="anonymous" style="width: 160px; height: 160px; object-fit: cover; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.3));">
+                        </div>
+                        
+                        <div style="padding: 25px; background: rgba(0,0,0,0.2); position: relative;">
+                            <h2 style="margin:0; font-size: 1.8rem; text-transform: uppercase; font-weight: 900; font-style: italic; line-height:1;">${data.name}</h2>
+                            <p style="color: ${data.color}; text-transform: uppercase; font-weight: 700; margin: 8px 0 0 0; font-size: 1rem; letter-spacing: 1px;">${data.team}</p>
+                            <div style="position: absolute; right: 20px; bottom: 20px; font-size: 4rem; font-weight: 900; font-style: italic; color: white; opacity: 0.1; line-height: 1;">#${data.number}</div>
+                        </div>
+                    </div>
+                `;
+            });
+            driversHTML += '</div>';
+
+            poster.innerHTML = `
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <h2 style="color: #e10600; text-transform: uppercase; letter-spacing: 4px; margin: 0; font-size: 1.1rem; font-weight: 700;">Official Prediction</h2>
+                    <h1 style="font-size: 4rem; text-transform: uppercase; font-weight: 900; font-style: italic; margin: 10px 0; line-height: 1; color: white;">2026 Podium Picks</h1>
+                </div>
+                ${driversHTML}
+                <div style="margin-top: 50px; text-transform: uppercase; color: #666; font-weight: 700; letter-spacing: 3px; font-size: 0.9rem;">
+                    Created by F1 Rank
+                </div>
+            `;
+            document.body.appendChild(poster);
+
+            html2canvas(poster, { useCORS: true, scale: 2, backgroundColor: "#0e0e12" }).then(canvas => {
+                const link = document.createElement('a'); link.download = 'F1 Top 3.png'; link.href = canvas.toDataURL("image/png"); link.click();
+                document.body.removeChild(poster); btn.innerHTML = originalText;
+            }).catch(err => { console.error(err); btn.innerHTML = "Error"; document.body.removeChild(poster); });
+        });
+    </script>
+    
+</body>
+</html>

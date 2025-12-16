@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>F1 2026 | Rank Teams</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <meta name="referrer" content="no-referrer">
+    <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:ital,wght@0,400;0,700;1,900&display=swap" rel="stylesheet">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <style>
+        /* Extra styles for F1 feel */
+        body {
+            font-family: 'Titillium Web', sans-serif;
+        }
+        
+        .f1-action-container {
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            padding-bottom: 40px;
+        }
+
+        .f1-btn {
+            font-family: 'Titillium Web', sans-serif;
+            font-weight: 700;
+            font-size: 16px;
+            text-transform: uppercase;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            letter-spacing: 0.5px;
+        }
+
+        /* Secondary Button (Ghost Style) */
+        .f1-btn-secondary {
+            background:#000a52 ;
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            color: white;
+        }
+        .f1-btn-secondary:hover {
+            border-color: white;
+            transform: translateY(-2px);
+            background: rgba(255,255,255,0.1);
+        }
+
+        /* Primary Button (F1 Red) */
+        .f1-btn-primary {
+            background-color: #e10600; /* Official F1 Red */
+            border: 2px solid #e10600;
+            color: white;
+            box-shadow: 0 4px 15px rgba(225, 6, 0, 0.4);
+        }
+        .f1-btn-primary:hover {
+            background-color: #ff0800;
+            border-color: #ff0800;
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(225, 6, 0, 0.6);
+        }
+
+        /* Little arrow decoration */
+        .f1-arrow {
+            font-size: 12px;
+            border: 1px solid white;
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 0;
+        }
+    </style>
+</head>
+<body>
+    <header class="f1-header" style="background: #000a52; color: #ffffff;">
+        <a href="/" class="nav-btn" style="border-color: rgba(255, 255, 255, 0.5); color: white;">← Home</a>
+        <div class="header-title" style="font-weight: 700;letter-spacing: 0.5px; font-family: 'F1 Regular';  ">CONSTRUCTORS CHAMPIONSHIP</div>
+         <button onclick="location.reload()" class="nav-btn" style="border-color: #ffffff; color: #ffffff;">RESET ↻</button>
+    </header>
+         <div class="f1-action-container">
+            <button onclick="captureList()" class="f1-btn f1-btn-secondary">
+              <span>🏁</span>  Share Full Grid
+            </button>
+            
+        </div>
+        
+
+    <main class="ranking-container">
+        
+        <div id="sortable-list">
+            {% for t in items %}
+            <div class="rank-item" style="--team-color: {{ t.color }}; height: 110px;">
+                <div class="rank-stripe"></div>
+
+                <div class="current-rank-pos" style="text-shadow: 0 0 5px rgb(0, 0, 0); z-index: 2; font-family: 'Titillium Web'; font-weight: 900; font-style: italic;">{{ loop.index }}</div>
+
+                <img src="{{ t.logo_url }}" 
+                     style="width: 80px; height: 80px; object-fit: contain; margin-left: 20px; z-index:2; filter: drop-shadow(0 0 20px rgba(131, 131, 131, 0.714));">
+
+                <div class="rank-info" style="margin-left: 20px; z-index: 2;">
+                    <div class="rank-name" style="font-size:2rem; font-family: 'Titillium Web'; font-weight: 700;">{{ t.name }}</div>
+                    <div class="rank-team" style="font-family: 'Titillium Web';">{{ t.full_name }}</div>
+                </div>
+
+                <div style="position: absolute; right:0; top:0; height:100%; width:60%; 
+                            background-image: url('{{ t.car_url }}'); 
+                            background-size: cover; background-position: center; 
+                            mask-image: linear-gradient(to right, transparent, black); 
+                            -webkit-mask-image: linear-gradient(to right, transparent, black); opacity:0.6;">
+                </div>
+
+                <div class="rank-grip" style="z-index: 2;">:::</div>
+            </div>
+            {% endfor %}
+        </div>
+
+    </main>
+    
+    <footer>
+        <p style="text-align: center; font-weight: bold; color: #666; margin-top: 40px;">By Saeid</p>
+    </footer>
+
+
+    <script>
+        // Sortable Logic
+        Sortable.create(document.getElementById('sortable-list'), {
+            animation: 200, // Slightly slower animation feels weightier
+            ghostClass: 'sortable-ghost',
+            onEnd: function (evt) {
+                let items = document.querySelectorAll('.current-rank-pos');
+                items.forEach((item, index) => { item.innerText = index + 1; });
+            }
+        });
+
+        // Screenshot Logic
+        function downloadImage(canvas, filename) {
+            const link = document.createElement('a');
+            link.download = filename;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        function captureList() {
+            const element = document.getElementById('sortable-list');
+            html2canvas(element, { 
+                useCORS: true, 
+                scale: 2, 
+                backgroundColor: '#15151e' 
+            }).then(canvas => {
+                downloadImage(canvas, 'F1_2026_Full_Grid.png');
+            });
+        }
+
+        function captureWinner() {
+            // Get the first item in the list (the winner)
+            const element = document.querySelector('.rank-item');
+            
+            if(element) {
+                // Extract Team Name for the filename
+                const teamName = element.querySelector('.rank-name').innerText.trim();
+                const safeName = teamName.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+
+                html2canvas(element, { 
+                    useCORS: true, 
+                    scale: 3, // High quality for the winner
+                    backgroundColor: '#15151e' 
+                }).then(canvas => {
+                    downloadImage(canvas, `My_Champion_is_${safeName}.png`);
+                });
+            } else {
+                alert("Grid is empty!");
+            }
+        }
+    </script>
+</body>
+
+</html>

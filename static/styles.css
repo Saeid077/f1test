@@ -1,0 +1,275 @@
+/* =========================================
+   1. OFFICIAL F1 TYPOGRAPHY & THEME
+   ========================================= */
+@import url('https://fonts.googleapis.com/css2?family=Titillium+Web:ital,wght@0,400;0,600;0,700;0,900;1,400&display=swap');
+
+:root {
+    --f1-carbon: #15151e;
+    --f1-dark: #101010;
+    --f1-border: #38383f;
+    --f1-white: #ffffff;
+    --f1-off-white: #f3f3f3;
+}
+
+body {
+    background-color: var(--f1-dark);
+    color: var(--f1-white);
+    font-family: 'Titillium Web', sans-serif;
+    margin: 0;
+    overflow-x: hidden;
+
+}
+
+/* =========================================
+   2. F1 HEADER (The "Skewed" Broadcast Bar)
+   ========================================= */
+.f1-header {
+    background-color: var(--f1-red);
+    padding: 15px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /* The Signature F1 Skewed Cut */
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); 
+    margin-bottom: 50px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 10px 30px rgba(0,0,0,0);
+}
+
+.header-title {
+    font-size: 2rem;
+    font-weight: 900; /* Black Weight */
+    font-style: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 0;
+}
+
+/* F1 Style Buttons (Ghost) */
+.nav-btn {
+    font-family: 'Titillium Web', sans-serif;
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.8);
+    color: white;
+    padding: 8px 24px;
+    font-weight: 700;
+    text-transform: uppercase;
+    text-decoration: none;
+    cursor: pointer;
+    font-size: 0.85rem;
+    border-radius: 4px; /* Slight round */
+    transition: all 0.2s ease;
+}
+
+.nav-btn:hover {
+    background: white;
+    color: var(--f1-red);
+    border-color: white;
+}
+
+/* =========================================
+   3. RANKING CONTAINER
+   ========================================= */
+.ranking-container {
+ 
+    max-width: 900px;
+    margin: 0 auto;
+    padding-bottom: 120px;
+}
+
+/* =========================================
+   4. THE F1 CARD (Official Shape)
+   ========================================= */
+.rank-item {
+    background-color: var(--f1-carbon);
+    height: 90px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    
+    /* THE F1 SHAPE: Rounded Top-Left, Cut Top-Right */
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12; 
+    border-bottom-right-radius: 12px;
+    border-bottom-left-radius: 12;
+    
+    /* Fine Border */
+    border: 1px solid var(--f1-border);
+    border-right: 4px solid var(--f1-border); /* Thicker right border */
+    
+    position: relative;
+    user-select: none;
+    cursor: grab;
+    transition: transform 0.15s ease, border-color 0.15s;
+}
+
+.rank-item:hover {
+    border-color: #666;
+    transform: translateX(5px); /* Slide slightly right on hover */
+}
+
+/* The Team Color Stripe (Left) */
+.rank-stripe {
+    width: 6px;
+    height: 100%;
+    background-color: var(--team-color);
+    margin-right: 15px;
+}
+
+/* --- A. RANK POSITION (Left) --- */
+.current-rank-pos {
+    font-size: 2.2rem;
+    font-weight: 900;
+    font-style: italic;
+    color: white;
+    width: 50px;
+    text-align: center;
+    margin-right: 10px;
+}
+
+/* --- B. AVATAR (Face Cutout) --- */
+.rank-avatar {
+    width: 65px;
+    height: 65px;
+    object-fit: cover;
+    object-position: top center;
+    border-radius: 50%; /* Circle */
+    border: 2px solid #333;
+    background-color: #1a1a1a;
+    margin-right: 20px;
+}
+
+/* --- C. INFO (Name & Team) --- */
+.rank-info {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.rank-name {
+    font-size: 1.4rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    line-height: 1;
+    margin-bottom: 2px;
+    letter-spacing: 0.5px;
+}
+
+.rank-team {
+    font-size: 0.75rem;
+    color: #999;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+/* --- D. LOGO (NO WHITE BOX - GLOW ONLY) --- */
+.rank-info img {
+    /* Critical: NO BACKGROUND COLOR */
+    background: transparent !important;
+    
+    width: 30px;
+    height: 30px;
+    object-fit: contain;
+    margin-right: 15px;
+    vertical-align: middle;
+    
+    /* The "Broadcast Glow" - Makes black logos visible on dark BG */
+    filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.4));
+}
+
+/* --- E. DRIVER NUMBER (Right) --- */
+.driver-number {
+    font-family: 'Titillium Web', sans-serif;
+    font-size: 2.5rem;
+    font-weight: 900;
+    font-style: italic;
+    /* F1 uses this transparent outlined style often */
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(255,255,255,0.4);
+    
+    margin-right: 25px;
+    width: 60px;
+    text-align: right;
+}
+
+/* --- F. GRIP (Subtle) --- */
+.rank-grip {
+    color: #444;
+    font-size: 1.2rem;
+    margin-right: 15px;
+}
+
+/* =========================================
+   5. PHYSICS
+   ========================================= */
+.sortable-ghost {
+    opacity: 0.4;
+    background: var(--f1-carbon);
+    border: 1px dashed var(--f1-red);
+}
+
+.sortable-drag {
+    background: var(--f1-carbon);
+    opacity: 1 !important;
+    transform: scale(1.02);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+    border: 1px solid var(--f1-red);
+    z-index: 9999;
+}
+
+/* =========================================
+   6. HOMEPAGE
+   ========================================= */
+.home-container {
+    height: 95vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.menu-grid {
+    display: flex;
+    gap: 40px;
+    margin-top: 40px;
+}
+
+.menu-card {
+    width: 650px;
+    height: 400px;
+    background-size: cover;
+    background-position: center;
+    /* F1 Card Shape */
+    border-top-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+    border-top-right-radius: 20px;
+    border-bottom-left-radius: 20px;
+    position: relative;
+    border: 1px solid #333;
+    transition: all 0.3s;
+    text-decoration: none;
+    color: white;
+    overflow: hidden;
+}
+
+.menu-card:hover {
+    transform: translateY(-10px);
+    border-color: var(--f1-red);
+    box-shadow: 0 20px 60px rgba(225,6,0,0.2);
+}
+
+.menu-overlay {
+    position: absolute; bottom: 0; width: 100%; height: 40%;
+    background: linear-gradient(to top, var(--f1-carbon) 10%, transparent);
+    display: flex; align-items: flex-end; padding: 30px; box-sizing: border-box;
+}
+
+.menu-title {
+    font-size: 3.5rem; font-weight: 900; font-style: italic; text-transform: uppercase;
+    line-height: 0.9;
+}
+
